@@ -1,0 +1,46 @@
+name: Build Windows Binary
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'main.spec'
+      - 'dist_obf/**'
+      - '.github/workflows/build-windows-v2.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller customtkinter darkdetect reportlab cryptography requests
+
+      - name: Install CodeEnigma runtime
+        run: pip install dist_obf/codeenigma_runtime-1.2.2-py3-none-any.whl
+
+      - name: Verify encrypted modules import
+        shell: bash
+        run: |
+          cd dist_obf/staging
+          python -c "import sys; sys.path.insert(0,'.'); import gui; print('Encrypted GUI imports OK')"
+
+      - name: Build with PyInstaller
+        run: pyinstaller main.spec --distpath build_out --workpath build_work
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: watemlifts-diag-windows
+          path: build_out/main.exe
+          if-no-files-found: error

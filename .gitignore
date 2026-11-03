@@ -1,0 +1,22 @@
+# Ignore source files everywhere
+*.py
+
+# But keep the obfuscated versions (encrypted, safe to publish)
+!dist_obf/staging/gui.py
+!dist_obf/staging/main.py
+!dist_obf/staging/report_generator.py
+!dist_obf/staging/database.py
+!dist_obf/staging/documents.py
+
+# Always ignore secrets, keys, licenses
+private_key.pem
+public_key.pem
+*.lic
+venv/
+__pycache__/
+*.pyc
+*.db
+*.pdf
+*.csv
+Reports/
+Exports/
